@@ -6,7 +6,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true, minlength: 6 },
   avatar: { type: String, default: '' },
-  isActive: { type: Boolean, default: true }
+  role: { type: String, enum: ['user', 'admin'], default: 'user' },
+  isActive: { type: Boolean, default: true },
+  bannedAt: { type: Date, default: null },
+  lastLoginAt: { type: Date, default: null }
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {

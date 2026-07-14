@@ -9,7 +9,7 @@ exports.register = async (req, res, next) => {
     if (existing) return res.status(400).json({ success: false, message: 'Email already registered' });
 
     const user = await User.create({ name, email, password });
-    const token = generateToken({ id: user._id });
+    const token = generateToken({ id: user._id, role: user.role });
     res.status(201).json({ success: true, token, user });
   } catch (error) { next(error); }
 };
@@ -22,7 +22,14 @@ exports.login = async (req, res, next) => {
     if (!user || !(await user.comparePassword(password)))
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
 
-    const token = generateToken({ id: user._id });
+    if (user.bannedAt || !user.isActive) {
+      return res.status(403).json({ success: false, message: 'Account is banned or inactive' });
+    }
+
+    user.lastLoginAt = new Date();
+    await user.save({ validateBeforeSave: false });
+
+    const token = generateToken({ id: user._id, role: user.role });
     res.json({ success: true, token, user });
   } catch (error) { next(error); }
 };

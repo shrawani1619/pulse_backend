@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 router.use('/auth', require('./authRoutes'));
+router.use('/admin', require('./adminRoutes'));
 router.use('/dreams', require('./dreamRoutes'));
 router.use('/goals', require('./goalRoutes'));
 router.use('/milestones', require('./milestoneRoutes'));
